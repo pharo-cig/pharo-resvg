@@ -33,11 +33,13 @@ LibResvg class >> convertRGBAToARGB32: pixels [
 	^ ByteArray new: pixels size streamContents: [ :stream | 
 		pixels
 			groupsOf: 4 "RGBA"
-			do: [ :eachArray | | r g b a |
-				a := eachArray fourth.
-				r := eachArray first.
-				g := eachArray second.
-				b := eachArray third.
+			atATimeDo: [ :rOrig :gOrig :bOrig :aOrig | 
+				| r g b a |
+				
+				a := aOrig.
+				r := rOrig.
+				g := gOrig.
+				b := bOrig.
 				
 				a = 0 ifFalse: [
 					r := ((r * a) + 127 / a) asInteger.
@@ -99,7 +101,7 @@ LibResvg class >> renderFormFromString: source scale: scale [
 	width := size width asInteger * scale.
 	height := size height asInteger * scale.
 	stride := width * 4.
-	pixels := ByteArray new: height * stride. 
+	pixels := ByteArray new: (height * stride).
 	"... with a scale"
 	transform := resvg transform_identity.
 	transform a: scale asFloat.
@@ -607,7 +609,7 @@ LibResvg >> renderTree: tree transform: transform width: width height: height pi
 	 *               premultiplied RGBA8888 pixels.
 	 */"
 
-	self ffiCall: #(void resvg_render(resvg_render_tree* tree, resvg_transform transform, uint32_t width, uint32_t height, char* pixmap))
+	self ffiCall: #(void resvg_render(resvg_render_tree* tree, resvg_transform transform, uint32_t width, uint32_t height, char*  pixmap))
 ]
 
 { #category : 'public - resvg' }
@@ -633,9 +635,7 @@ LibResvg >> render_nodeTree: tree id: id transform: transform width: width heigh
 { #category : 'accessing' }
 LibResvg >> runner [
 	
-	^ TFProcessLocalWorker new 
-		defaultWorker: TFSameThreadRunner uniqueInstance;
-		yourself
+	^ TFSameThreadRunner uniqueInstance
 ]
 
 { #category : 'public - resvg' }
