@@ -274,7 +274,7 @@ LibResvg >> macLibraryName [
 
 	^ FFIMacLibraryFinder new
 		userPaths: #('./CIG/lib');
-		findLibrary: 'libresvg.dylib'
+		findLibrary: 'libresvg.0.46.dylib'
 ]
 
 { #category : 'public - resvg' }
